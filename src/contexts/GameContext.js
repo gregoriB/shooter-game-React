@@ -19,10 +19,10 @@ export class GameProvider extends Component {
     speed: 10, // larger is slower, 10 is the fastest.
     stride: 4, // how far the player moves with each move input. Also affects the movement speed.
     willMove: {
-      left: '',
-      right: '',
-      up: '',
-      down: ''
+      left: false,
+      right: false,
+      up: false,
+      down: false
     }
   }
 

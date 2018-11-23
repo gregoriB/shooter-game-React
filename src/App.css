@@ -5,6 +5,7 @@ body {
 }
 
 .arena {
+  cursor: crosshair;
   background: rgb(218, 2, 2);
   position: relative;
   margin: 2% auto;

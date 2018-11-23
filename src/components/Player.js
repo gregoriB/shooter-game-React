@@ -39,13 +39,13 @@ class Player extends Component {
       newPlayerPos.splice(0, 1, newPlayerPos[0] + stride/2);
       newPlayerPos.splice(1, 1, newPlayerPos[1] - stride/2);
     }
-    else if (willMove.left && willMove.up) {
-      newPlayerPos.splice(0, 1, newPlayerPos[0] - stride/2);
-      newPlayerPos.splice(1, 1, newPlayerPos[1] - stride/2);
-    }
     else if (willMove.right && willMove.down) {
       newPlayerPos.splice(0, 1, newPlayerPos[0] + stride/2);
       newPlayerPos.splice(1, 1, newPlayerPos[1] + stride/2);
+    }
+    else if (willMove.left && willMove.up) {
+      newPlayerPos.splice(0, 1, newPlayerPos[0] - stride/2);
+      newPlayerPos.splice(1, 1, newPlayerPos[1] - stride/2);
     }
     else if (willMove.left && willMove.down) {
       newPlayerPos.splice(0, 1, newPlayerPos[0] - stride/2);
@@ -58,7 +58,7 @@ class Player extends Component {
     return newPlayerPos;
   }
 
-  handleKeydown = (e) => {
+  handleKeyDown = (e) => {
     e.preventDefault();
     if (!this.props.isReady) {
       this.handleClearMovement();
@@ -76,16 +76,16 @@ class Player extends Component {
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
-          this.handleDetermineMove(0, stride);
+        this.handleDetermineMove(0, stride);
         break;
       case 'ArrowLeft':
       case 'a':
         this.handleDetermineMove(0, -stride);
         break;
-        case 'ArrowDown':
-        case 's':
-            this.handleDetermineMove(1, stride);
-          break;
+      case 'ArrowDown':
+      case 's':
+        this.handleDetermineMove(1, stride);
+        break;
       case 'ArrowUp':
       case 'w':
         this.handleDetermineMove(1, -stride);
@@ -99,82 +99,88 @@ class Player extends Component {
     const speed = this.props.speed;
     const willMove = this.props.willMove;
     const canMove = this.props.canMove;
-    if (index === 0 && stride > 0 && canMove.right) {
-      clearInterval(willMove.left);
+    if (index === 0 && stride > 0 && canMove.right) {  //right
       clearInterval(willMove.right);
       willMove.right = (
         setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
       );
+      clearInterval(willMove.left);
+      willMove.left = false;
       canMove.right = false;
     }
-    if (index === 0 && stride < 0 && canMove.left) {
-      clearInterval(willMove.right);
+    if (index === 0 && stride < 0 && canMove.left) {  //left
       clearInterval(willMove.left);
       willMove.left = (
         setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
       );
+      clearInterval(willMove.right);
+      willMove.right = false;
       canMove.left = false;
     }
-    if (index === 1 && stride > 0 && canMove.down) {
-      clearInterval(willMove.up);
+    if (index === 1 && stride > 0 && canMove.down) {  //down
       clearInterval(willMove.down);
       willMove.down = (
         setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
       );
+      clearInterval(willMove.up);
+      willMove.up = false;
       canMove.down = false;
     }
-    if (index === 1 && stride < 0 && canMove.up) {
-      clearInterval(willMove.down);
+    if (index === 1 && stride < 0 && canMove.up) {  //up
       clearInterval(willMove.up);
       willMove.up = (
         setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
       );
+      clearInterval(willMove.down);
+      willMove.down = false;
       canMove.up = false;
     }
   }
 
-   //removes the interval set to a key to stop movement and allows the key input to register again.
-  handleKeyup = (e) => {
+   //removes the interval set to a key to stop movement and allows the key input to register again.  Also handles opposing directions.
+  handleKeyUp = (e) => {
     e.preventDefault();
     const stride = this.props.stride;
+    const willMove = this.props.willMove;
+    const canMove = this.props.canMove;
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
-        this.props.canMove.right = true;
-        clearInterval(this.props.willMove.right);
-        this.props.willMove.right = false;
-        if (!this.props.canMove.left) {
-          this.props.canMove.left = true;
+        clearInterval(willMove.right);
+        canMove.right = true;
+        willMove.right = false;
+        if (!canMove.left) {
+          canMove.left = true;
           this.handleDetermineMove(0, -stride);
         }
         break
       case 'ArrowLeft':
       case 'a':
-        this.props.canMove.left = true;
-        clearInterval(this.props.willMove.left);
-        this.props.willMove.left = false;
-        if (!this.props.canMove.right) {
-          this.props.canMove.right = true;
+        clearInterval(willMove.left);
+        canMove.left = true;
+        willMove.left = false;
+        if (!canMove.right) {
+          canMove.right = true;
           this.handleDetermineMove(0, stride);
         }
         break;
       case 'ArrowDown':
       case 's':
-        this.props.canMove.down = true;
-        clearInterval(this.props.willMove.down);
-        this.props.willMove.down = false;
-        if (!this.props.canMove.up) {
-          this.props.canMove.up = true;
+        clearInterval(willMove.down);
+        canMove.down = true;
+        willMove.down = false;
+        if (!canMove.up) {
+          canMove.up = true;
           this.handleDetermineMove(1, -stride);
         }
         break;
       case 'ArrowUp':
       case 'w':
-        this.props.canMove.up = true;
-        clearInterval(this.props.willMove.up);
-        this.props.willMove.up = false;
-        if (!this.props.canMove.down) {
-          this.props.canMove.down = true;
+        clearInterval(willMove.up);
+        canMove.up = true;
+        willMove.up = false;
+        if (!canMove.down) {
+          canMove.down = true;
           this.handleDetermineMove(1, stride);
         }
         break;
@@ -184,30 +190,31 @@ class Player extends Component {
   }
 
   handleClearMovement = () => {
-    clearInterval(this.props.willMove.right);
-    this.props.willMove.right = false;
-    clearInterval(this.props.willMove.left);
-    this.props.willMove.left = false;
-    clearInterval(this.props.willMove.up);
-    this.props.willMove.up = false;
-    clearInterval(this.props.willMove.down);
-    this.props.willMove.down = false;
+    const willMove = this.props.willMove;
+    clearInterval(willMove.right);
+    willMove.right = false;
+    clearInterval(willMove.left);
+    willMove.left = false;
+    clearInterval(willMove.up);
+    willMove.up = false;
+    clearInterval(willMove.down);
+    willMove.down = false;
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.handleKeydown);
-    document.addEventListener('keyup', this.handleKeyup);
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeydown);
-    document.removeEventListener('keyup', this.handleKeyup);
+    document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keyup', this.handleKeyUp);
   }
 
   render() {
 
     const { playerPos, size } = this.props;
-
+    
     return (
       <>
         <div              
