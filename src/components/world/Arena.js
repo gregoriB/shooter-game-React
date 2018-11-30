@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { PlayerContext } from '../contexts/PlayerContext';
-import { EnemyContext } from '../contexts/EnemiesContext';
-import Player from './Player';
-import Enemies from './Enemies';
-import Hud from './Hud';
-import Crosshairs from './Crosshairs';
-import { audio } from '../helpers/audio'
+import { audio } from '../../data/audio/audio';
+import { PlayerContext } from '../../contexts/PlayerContext';
+import Crosshairs from '../UI/Crosshairs';
+import Enemies from '../enemies/EnemyGrunts';
+import Hud from '../UI/Hud';
+import Player from '../player/Player';
+import { gameData } from '../../data/game/gameData'
 
 export default class Arena extends Component {
 
@@ -25,6 +25,7 @@ export default class Arena extends Component {
 
   handleAutomaticFire = (e) => {
     if (this.fireInterval) {
+
       return;
     }
     this.handleFireGun();
@@ -42,9 +43,21 @@ export default class Arena extends Component {
     this.setState(() => ({ crosshairPos:  newCrosshairPos}))
   }
 
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  interval;
+
   componentDidMount() {
+    this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
     document.addEventListener('mousemove', this.handleUpdateCrosshairPos)
     audio.shoot1.volume = .1;
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousemove', this.handleUpdateCrosshairPos)
+    clearInterval(this.interval)
   }
 
   render() {
@@ -54,28 +67,23 @@ export default class Arena extends Component {
         onMouseDown={() => this.handleAutomaticFire()}
         onMouseUp={this.handleStopFiring}
       >
-        <EnemyContext.Consumer>
-          {enemies => (
-            <PlayerContext.Consumer>
-              {player => (
-                <>
-                  <Hud {...player} />
-                  <Player {...player} />
-                  <Enemies 
-                    {...enemies} 
-                    {...player} 
-                    crosshairPos={this.state.crosshairPos}
-                    firing={this.fireInterval}
-                  />
-                  <Crosshairs 
-                    crosshairPos={this.state.crosshairPos}
-                    crosshairDisplay={this.state.crosshairDisplay}
-                  />
-                </>
-              )}
-            </PlayerContext.Consumer>
+        <PlayerContext.Consumer>
+          {player => (
+            <>
+              <Hud {...player} />
+              <Player {...player} />
+              <Enemies 
+                {...player} 
+                crosshairPos={this.state.crosshairPos}
+                isShooting={this.fireInterval}
+              />
+              <Crosshairs 
+                crosshairPos={this.state.crosshairPos}
+                crosshairDisplay={this.state.crosshairDisplay}
+              />
+            </>
           )}
-        </EnemyContext.Consumer>
+        </PlayerContext.Consumer>
       </div>
     )
   }

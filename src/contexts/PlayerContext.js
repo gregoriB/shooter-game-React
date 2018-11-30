@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { audio } from '../helpers/audio'
+import { audio } from '../data/audio/audio'
 
 export const PlayerContext = React.createContext();
 

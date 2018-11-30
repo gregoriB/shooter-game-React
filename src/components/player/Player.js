@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { gameData } from '../../data/game/gameData'
 
 class Player extends Component {
 
@@ -209,7 +210,7 @@ class Player extends Component {
   interval;
 
   componentDidMount() {
-    this.interval = setInterval(() => this.forceUpdate(), 16);
+    this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
   }

@@ -1,35 +1,38 @@
 import React, { Component } from 'react';
-import { enemyData } from '../helpers/enemies';
-import Enemy from './Enemy';
+import { grunt } from '../../data/enemies/grunt';
+import Enemy from './EnemyGrunt';
+import { gameData } from '../../data/game/gameData';
 
 class Enemies extends Component {
-  enemies;
-  stage = 15;
+  grunts;
+  numberEnemies = 20;
+  stage = 0;
 
   handlePopulateEnemies = () => {
-    if (enemyData.enemiesPos.length <= 0) {
+    if (grunt.pos.length <= 0) {
 
       return;
     }
-    this.enemies = enemyData.enemiesPos.map((item, index) => {
+    this.grunts = grunt.pos.map((item, index) => {
       return (
         <Enemy
           playerTakeDamage={this.props.handleTakeDamage}
           playerPos={this.props.playerPos}
           playerSize={this.props.playerSize}
           index={index}
-          firing={this.props.firing}
+          isShooting={this.props.isShooting}
           crosshairPos={this.props.crosshairPos}
-          key={enemyData.enemyKeys[index]}
+          key={grunt.keys[index]}
         />
       )
     });
   }
 
   handleGameState= () => {
-    if (enemyData.enemiesPos.length <= 0) {
+    if (grunt.pos.length <= 0) {
+      this.numberEnemies += 3;
       this.stage += 1;
-      enemyData.generateEnemies(this.stage)
+      grunt.generateGrunts(this.numberEnemies)
     }
     this.handlePopulateEnemies();
   }
@@ -42,7 +45,7 @@ class Enemies extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => this.interval = setInterval(() => this.forceUpdate(), 32), 1000)
+    setTimeout(() => this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate), 1000)
   }
   
   componentWillUpdate() {
@@ -55,8 +58,13 @@ class Enemies extends Component {
 
   render() {
     return (
-      <div>
-        {this.enemies}
+      <div className='tempHud'>
+        <div>
+          {this.grunts}
+        </div>
+        <div className='stageCounter'>
+          Stage: {this.stage}
+        </div>
       </div>
     )
   }
