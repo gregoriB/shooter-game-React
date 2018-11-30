@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { audio } from '../helpers/audio'
 
 export const PlayerContext = React.createContext();
 
@@ -34,7 +35,15 @@ export class PlayerProvider extends Component {
 
     handleTakeDamage: (damage) => {
       const health = this.state.playerHealth;
-      this.setState(() => ({ playerHealth: health - damage }));
+      audio.hit2.volume = .1;
+      audio.hit2.currentTime = 0;
+      audio.hit2.play();
+      if (!health || health - damage <= 0) {
+        return this.setState(() => ({ playerHealth: 'DEAD' }))
+      }
+      if (health > 0) {
+        this.setState(() => ({ playerHealth: health - damage }));
+      }
     }
   }
 

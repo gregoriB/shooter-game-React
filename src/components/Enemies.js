@@ -18,6 +18,8 @@ class Enemies extends Component {
           playerPos={this.props.playerPos}
           playerSize={this.props.playerSize}
           index={index}
+          firing={this.props.firing}
+          crosshairPos={this.props.crosshairPos}
           key={enemyData.enemyKeys[index]}
         />
       )
