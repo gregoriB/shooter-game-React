@@ -14,20 +14,20 @@ class Player extends Component {
   }
 
   handleBoundaryCheck = (newPlayerPos) => {
-    const size = this.props.size;
+    const playerSize = this.props.playerSize;
     const width = this.map.width;
     const height = this.map.height;
     if (newPlayerPos[0] < 0) {
       newPlayerPos.splice(0, 1, 0);
     }
-    if (newPlayerPos[0] > width - (size * 2)) {
-      newPlayerPos.splice(0, 1, width - (size * 2));
+    if (newPlayerPos[0] > width - (playerSize * 2)) {
+      newPlayerPos.splice(0, 1, width - (playerSize * 2));
     }
     if (newPlayerPos[1] < 0) {
       newPlayerPos.splice(1, 1, 0);
     }
-    if (newPlayerPos[1] > height - (size * 2)) {
-      newPlayerPos.splice(1, 1, height - (size * 2))
+    if (newPlayerPos[1] > height - (playerSize * 2)) {
+      newPlayerPos.splice(1, 1, height - (playerSize * 2))
     }
   }
 
@@ -201,7 +201,15 @@ class Player extends Component {
     willMove.down = false;
   }
 
+  shouldComponentUpdate() {
+
+    return false;
+  }
+
+  interval;
+
   componentDidMount() {
+    this.interval = setInterval(() => this.forceUpdate(), 16);
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
   }
@@ -213,15 +221,16 @@ class Player extends Component {
 
   render() {
 
-    const { playerPos, size } = this.props;
+    const { playerPos, playerSize } = this.props;
     
     return (
       <>
         <div              
           className='player'
           style={{
+            color: 'white',
             background: 'black',
-            padding: size,
+            padding: playerSize,
             position: 'absolute',
             left: playerPos[0],
             top: playerPos[1]

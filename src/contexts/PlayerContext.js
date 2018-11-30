@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 
-export const GameContext = React.createContext();
+export const PlayerContext = React.createContext();
 
-export class GameProvider extends Component {
+export class PlayerProvider extends Component {
   state = {
-    playerPos: [450, 300]
+    playerPos: [450, 300],
+    playerHealth: 100
   }
 
   player = {
@@ -15,7 +16,7 @@ export class GameProvider extends Component {
       down: true
     },
     isReady: true,
-    size: 12,
+    playerSize: 15,
     speed: 10, // larger is slower, 10 is the fastest.
     stride: 4, // how far the player moves with each move input. Also affects the movement speed.
     willMove: {
@@ -29,12 +30,17 @@ export class GameProvider extends Component {
   functions = {
     handlePlayerMove: (newPlayerPos) => {
       this.setState(() => ({ playerPos: newPlayerPos }));
+    },
+
+    handleTakeDamage: (damage) => {
+      const health = this.state.playerHealth;
+      this.setState(() => ({ playerHealth: health - damage }));
     }
   }
 
   render() {
     return (
-      <GameContext.Provider 
+      <PlayerContext.Provider 
         value={{
           ...this.state,
           ...this.functions,
@@ -42,7 +48,7 @@ export class GameProvider extends Component {
         }}
       >
         {this.props.children}
-      </GameContext.Provider>
+      </PlayerContext.Provider>
     );
   }
 }

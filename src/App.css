@@ -1,3 +1,10 @@
+* {
+  -moz-user-select: none;
+  overflow: hidden;
+  user-select: none;
+}
+
+
 body {
   width: 100vw;
   margin: 0 auto;
@@ -6,9 +13,29 @@ body {
 
 .arena {
   cursor: crosshair;
-  background: rgb(218, 2, 2);
+  background: rgba(85, 2, 218, 0.438);
   position: relative;
   margin: 2% auto;
   width: 900px;
   height: 600px;
+}
+
+.enemy {
+  position: absolute;
+  display: inline-block;
+}
+
+.hud {
+  padding: 2rem;
+  display: inline-block;
+  position: relative;
+  color: white;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.crosshairs {
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 50%;
 }
