@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { grunt } from '../../data/enemies/grunt';
 import { audio } from '../../data/audio/audio';
 import { gameData } from '../../data/game/gameData';
+import { grunt } from '../../data/enemies/grunt';
 
 class Enemy extends Component {
 
   movementInterval = false;
   damageInterval = false;
-  key = grunt.keys[this.props.index]
+  key = grunt.keys[this.props.index];
 
   handleEnemyMovement = () => {
 
@@ -23,20 +23,6 @@ class Enemy extends Component {
     const playerY = this.props.playerPos[1];
     gruntX = gruntX > playerX ? gruntX - move: gruntX + move;
     gruntY = gruntY > playerY ? gruntY - move: gruntY + move;
-    // const playerSize = this.props.playerSize * 2;
-    // const gruntSize = grunt.enemySize*2;
-    // if (gruntX + gruntSize < playerX + playerSize) {
-    //   gruntX += ~~(Math.random() * 5);
-    // }
-    // if (gruntX > playerX) {
-    //   gruntX -= ~~(Math.random() * 5);
-    // }
-    // if (gruntY + gruntSize < playerY + playerSize) {
-    //   gruntY += ~~(Math.random() * 5);
-    // }
-    // if (gruntY > playerY) {
-    //   gruntY -= ~~(Math.random() * 5);
-    // }
     grunt.updateGruntPos(index, [gruntX, gruntY]);
     this.handleCheckPlayerCollision(gruntX, gruntY, playerX, playerY);
     this.handleCheckCrosshairPos(gruntX, gruntY, playerX, playerY);
@@ -63,17 +49,6 @@ class Enemy extends Component {
     }
   }
   
-  handleHit = () => {
-    if (this.key === grunt.keys[this.props.index] ) {
-      audio.hit1.volume = .1;
-      audio.hit1.currentTime = 0;
-      audio.hit1.play();
-      clearInterval(this.movementInterval);
-      this.movementInterval = false;
-      grunt.removeGrunt(this.props.index);
-    }
-  }
-  
   handleCheckCrosshairPos = (gruntX, gruntY) => {
     if (!gameData.isShooting) {
 
@@ -83,8 +58,19 @@ class Enemy extends Component {
     const crosshairY = this.props.crosshairPos[1];
     const gruntSize = grunt.size*2;
     if ((crosshairX >= gruntX && crosshairX <= gruntX + gruntSize) && (crosshairY >= gruntY && crosshairY <= gruntY + gruntSize)) {
-      this.handleHit();
+      this.handleDamageGrunt();
       gameData.isShooting = false;
+    }
+  }
+
+  handleDamageGrunt = () => {
+    if (this.key === grunt.keys[this.props.index] ) {
+      audio.hit1.volume = .1;
+      audio.hit1.currentTime = 0;
+      audio.hit1.play();
+      clearInterval(this.movementInterval);
+      this.movementInterval = false;
+      grunt.removeGrunt(this.props.index);
     }
   }
 

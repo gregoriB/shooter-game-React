@@ -18,17 +18,17 @@ export const grunt = {
         const key = uuid();
         grunt.pos.push([X, Y]);
         grunt.color.push(color);
-        grunt.speed.push(speed)
+        grunt.speed.push(speed);
         grunt.keys.push(key);
       }
     },
     updateGruntPos: (index, newPos) => {
-      grunt.pos.splice(index, 1, newPos)
+      grunt.pos.splice(index, 1, newPos);
     },
     removeGrunt: (index) => {
-      grunt.pos.splice(index, 1)
-      grunt.keys.splice(index, 1)
-      grunt.color.splice(index, 1)
-      grunt.speed.splice(index, 1)
+      grunt.pos.splice(index, 1);
+      grunt.keys.splice(index, 1);
+      grunt.color.splice(index, 1);
+      grunt.speed.splice(index, 1);
     }
   }

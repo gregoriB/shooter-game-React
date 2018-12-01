@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { audio } from '../../data/audio/audio';
+import { gameData } from '../../data/game/gameData'
 import { PlayerContext } from '../../contexts/PlayerContext';
 import Crosshairs from '../UI/Crosshairs';
 import Enemies from '../enemies/EnemyGrunts';
 import Hud from '../UI/Hud';
 import Player from '../player/Player';
-import { gameData } from '../../data/game/gameData'
 
 export default class Arena extends Component {
 
@@ -43,7 +43,7 @@ export default class Arena extends Component {
   handleUpdateCrosshairPos = (e) => {
     const outerDiv = document.getElementsByClassName('arena')[0].getBoundingClientRect();
     const newCrosshairPos = [e.clientX - (outerDiv.left + 4), e.clientY - (outerDiv.top + 4)];
-    this.setState(() => ({ crosshairPos:  newCrosshairPos}))
+    this.setState(() => ({ crosshairPos:  newCrosshairPos}));
   }
 
   shouldComponentUpdate() {
@@ -55,13 +55,13 @@ export default class Arena extends Component {
 
   componentDidMount() {
     this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
-    document.addEventListener('mousemove', this.handleUpdateCrosshairPos)
+    document.addEventListener('mousemove', this.handleUpdateCrosshairPos);
     audio.shoot1.volume = .1;
   }
 
   componentWillUnmount() {
-    document.removeEventListener('mousemove', this.handleUpdateCrosshairPos)
-    clearInterval(this.interval)
+    document.removeEventListener('mousemove', this.handleUpdateCrosshairPos);
+    clearInterval(this.interval);
   }
 
   render() {

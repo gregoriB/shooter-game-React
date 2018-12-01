@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
+import { gameData } from '../../data/game/gameData';
 import { grunt } from '../../data/enemies/grunt';
 import Enemy from './EnemyGrunt';
-import { gameData } from '../../data/game/gameData';
 
 class Enemies extends Component {
   grunts;
@@ -32,7 +32,7 @@ class Enemies extends Component {
     if (grunt.pos.length <= 0) {
       this.numberEnemies += 3;
       this.stage += 1;
-      grunt.generateGrunts(this.numberEnemies)
+      grunt.generateGrunts(this.numberEnemies);
     }
     this.handlePopulateEnemies();
   }
@@ -45,7 +45,7 @@ class Enemies extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate), 1000)
+    setTimeout(() => this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate), 1000);
   }
   
   componentWillUpdate() {
