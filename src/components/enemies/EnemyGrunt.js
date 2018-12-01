@@ -1,6 +1,7 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { grunt } from '../../data/enemies/grunt';
-import { audio } from '../../data/audio/audio'
+import { audio } from '../../data/audio/audio';
+import { gameData } from '../../data/game/gameData';
 
 class Enemy extends Component {
 
@@ -74,7 +75,7 @@ class Enemy extends Component {
   }
   
   handleCheckCrosshairPos = (gruntX, gruntY) => {
-    if (!this.props.isShooting) {
+    if (!gameData.isShooting) {
 
       return;
     }
@@ -83,6 +84,7 @@ class Enemy extends Component {
     const gruntSize = grunt.size*2;
     if ((crosshairX >= gruntX && crosshairX <= gruntX + gruntSize) && (crosshairY >= gruntY && crosshairY <= gruntY + gruntSize)) {
       this.handleHit();
+      gameData.isShooting = false;
     }
   }
 
@@ -104,7 +106,6 @@ class Enemy extends Component {
     return (
       <div
         className='enemy'
-        // onMouseDown={this.handleHit}
         style={{
           background: grunt.color[index],
           left: grunt.pos[this.props.index][0],

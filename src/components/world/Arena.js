@@ -15,15 +15,18 @@ export default class Arena extends Component {
   }
 
   fireInterval = false;
+  isShooting = false;
 
   handleFireGun = () => {
+    gameData.isShooting = true;
     audio.shoot1.currentTime = 0;
     audio.shoot1.play();
     this.setState(() => ({ crosshairDisplay: 'inline-block' }));
     setTimeout(() => {this.setState(() => ({ crosshairDisplay: 'none' }))}, 50);
+    setTimeout(() => (gameData.isShooting = false), 60);
   }
 
-  handleAutomaticFire = (e) => {
+  handleAutomaticFire = () => {
     if (this.fireInterval) {
 
       return;
@@ -44,6 +47,7 @@ export default class Arena extends Component {
   }
 
   shouldComponentUpdate() {
+
     return false;
   }
 
@@ -75,7 +79,7 @@ export default class Arena extends Component {
               <Enemies 
                 {...player} 
                 crosshairPos={this.state.crosshairPos}
-                isShooting={this.fireInterval}
+                isShooting={this.isFiring}
               />
               <Crosshairs 
                 crosshairPos={this.state.crosshairPos}
