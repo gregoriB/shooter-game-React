@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { audio } from '../../data/audio/audio';
-import { gameData } from '../../data/game/gameData'
+import { gameData } from '../../data/game/gameData';
 import { PlayerContext } from '../../contexts/PlayerContext';
 import Crosshairs from '../UI/Crosshairs';
 import Enemies from '../enemies/EnemyGrunts';
@@ -15,22 +15,21 @@ export default class Arena extends Component {
   }
 
   fireInterval = false;
+  interval;
   isShooting = false;
 
   handleFireGun = () => {
     gameData.isShooting = true;
     audio.shoot1.currentTime = 0;
     audio.shoot1.play();
-    this.setState(() => ({ crosshairDisplay: 'inline-block' }));
-    setTimeout(() => {this.setState(() => ({ crosshairDisplay: 'none' }))}, 50);
-    setTimeout(() => (gameData.isShooting = false), 60);
+    this.setState({ crosshairDisplay: 'inline-block' });
+    setTimeout(() => this.setState({ crosshairDisplay: 'none' }), 50);
+    setTimeout(() => gameData.isShooting = false, 60);
   }
 
   handleAutomaticFire = () => {
-    if (this.fireInterval) {
+    if (this.fireInterval) return;
 
-      return;
-    }
     this.handleFireGun();
     this.fireInterval = setInterval(() => this.handleFireGun(), 150);
   }
@@ -40,18 +39,13 @@ export default class Arena extends Component {
     this.fireInterval = false;
   }
 
-  handleUpdateCrosshairPos = (e) => {
+  handleUpdateCrosshairPos = e => {
     const outerDiv = document.getElementsByClassName('arena')[0].getBoundingClientRect();
     const newCrosshairPos = [e.clientX - (outerDiv.left + 4), e.clientY - (outerDiv.top + 4)];
-    this.setState(() => ({ crosshairPos:  newCrosshairPos}));
+    this.setState({ crosshairPos:  newCrosshairPos});
   }
 
-  shouldComponentUpdate() {
-
-    return false;
-  }
-
-  interval;
+  shouldComponentUpdate() { return false }
 
   componentDidMount() {
     this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
@@ -65,11 +59,15 @@ export default class Arena extends Component {
   }
 
   render() {
+
+    const { crosshairPos, crosshairDisplay } = this.state,
+          { handleAutomaticFire, handleStopFiring, isFiring } = this;
+
     return (
       <div 
         className='arena' 
-        onMouseDown={() => this.handleAutomaticFire()}
-        onMouseUp={this.handleStopFiring}
+        onMouseDown={handleAutomaticFire}
+        onMouseUp={handleStopFiring}
       >
         <PlayerContext.Consumer>
           {player => (
@@ -78,12 +76,12 @@ export default class Arena extends Component {
               <Player {...player} />
               <Enemies 
                 {...player} 
-                crosshairPos={this.state.crosshairPos}
-                isShooting={this.isFiring}
+                crosshairPos={crosshairPos}
+                isShooting={isFiring}
               />
               <Crosshairs 
-                crosshairPos={this.state.crosshairPos}
-                crosshairDisplay={this.state.crosshairDisplay}
+                crosshairPos={crosshairPos}
+                crosshairDisplay={crosshairDisplay}
               />
             </>
           )}

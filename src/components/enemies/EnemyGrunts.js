@@ -5,14 +5,13 @@ import Enemy from './EnemyGrunt';
 
 class Enemies extends Component {
   grunts;
+  interval;
   numberEnemies = 20;
   stage = 0;
 
   handlePopulateEnemies = () => {
-    if (grunt.pos.length <= 0) {
+    if (grunt.pos.length <= 0) return;
 
-      return;
-    }
     this.grunts = grunt.pos.map((item, index) => {
       return (
         <Enemy
@@ -37,24 +36,15 @@ class Enemies extends Component {
     this.handlePopulateEnemies();
   }
 
-  interval;
-
-  shouldComponentUpdate() {
-
-    return false;
-  }
+  shouldComponentUpdate() { return false }
 
   componentDidMount() {
     setTimeout(() => this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate), 1000);
   }
   
-  componentWillUpdate() {
-    this.handleGameState();
-  }
+  componentWillUpdate() { this.handleGameState() }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
+  componentWillUnmount() { clearInterval(this.interval) }
 
   render() {
     return (

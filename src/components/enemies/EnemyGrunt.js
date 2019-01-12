@@ -12,15 +12,13 @@ class Enemy extends Component {
   handleEnemyMovement = () => {
 
     const index = this.props.index;
-    if (!grunt.keys[index]) {
-      
-      return;
-    }
-    let gruntX = grunt.pos[index][0];
-    let gruntY = grunt.pos[index][1];
-    const move = ~~(Math.random() * 5);
-    const playerX = this.props.playerPos[0];
-    const playerY = this.props.playerPos[1];
+    if (!grunt.keys[index]) return;
+
+    let gruntX = grunt.pos[index][0],
+        gruntY = grunt.pos[index][1];
+    const move    = ~~(Math.random() * 5),
+          playerX = this.props.playerPos[0],
+          playerY = this.props.playerPos[1];
     gruntX = gruntX > playerX ? gruntX - move: gruntX + move;
     gruntY = gruntY > playerY ? gruntY - move: gruntY + move;
     grunt.updateGruntPos(index, [gruntX, gruntY]);
@@ -29,8 +27,8 @@ class Enemy extends Component {
   }
 
   handleCheckPlayerCollision = (gruntX, gruntY, playerX, playerY) => {
-    const gruntSize = grunt.size*2;
-    const playerSize = this.props.playerSize*2;
+    const gruntSize  = grunt.size * 2,
+          playerSize = this.props.playerSize * 2;
     if (((gruntX <= playerX && gruntX + gruntSize >= playerX) ||
         ( gruntX + gruntSize >= playerX + playerSize && gruntX <= playerX + playerSize) ||
         ( gruntX >= playerX && gruntX + gruntSize <= playerX + playerSize))
@@ -50,13 +48,11 @@ class Enemy extends Component {
   }
   
   handleCheckCrosshairPos = (gruntX, gruntY) => {
-    if (!gameData.isShooting) {
+    if (!gameData.isShooting) return;
 
-      return;
-    }
-    const crosshairX = this.props.crosshairPos[0];
-    const crosshairY = this.props.crosshairPos[1];
-    const gruntSize = grunt.size*2;
+    const crosshairX = this.props.crosshairPos[0],
+          crosshairY = this.props.crosshairPos[1],
+          gruntSize  = grunt.size*2;
     if ((crosshairX >= gruntX && crosshairX <= gruntX + gruntSize) && (crosshairY >= gruntY && crosshairY <= gruntY + gruntSize)) {
       this.handleDamageGrunt();
       gameData.isShooting = false;

@@ -29,21 +29,16 @@ export class PlayerProvider extends Component {
   }
 
   functions = {
-    handlePlayerMove: (newPlayerPos) => {
-      this.setState(() => ({ playerPos: newPlayerPos }));
-    },
+    handlePlayerMove: newPlayerPos => this.setState({ playerPos: newPlayerPos }),
 
     handleTakeDamage: (damage) => {
       const health = this.state.playerHealth;
       audio.hit2.volume = .1;
       audio.hit2.currentTime = 0;
       audio.hit2.play();
-      if (!health || health - damage <= 0) {
-        return this.setState(() => ({ playerHealth: 'DEAD' }))
-      }
-      if (health > 0) {
-        this.setState(() => ({ playerHealth: health - damage }));
-      }
+      if (!health || health - damage <= 0) return this.setState({ playerHealth: 'DEAD' });
+
+      if (health > 0) this.setState({ playerHealth: health - damage });
     }
   }
 

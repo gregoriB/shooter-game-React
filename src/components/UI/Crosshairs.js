@@ -5,17 +5,11 @@ class Crosshairs extends Component {
 
   interval;
 
-  shouldComponentUpdate() {
-    return false;
-  }
+  shouldComponentUpdate() { return false }
 
-  componentDidMount() {
-    this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
-  }
+  componentDidMount() { this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate) }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
+  componentWillUnmount() { clearInterval(this.interval) }
 
   render() {
     return (

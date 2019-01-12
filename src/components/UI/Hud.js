@@ -3,9 +3,7 @@ import React, { Component } from 'react'
 class Hud extends Component {
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.playerHealth === this.props.playerHealth) {
-      return false;
-    }
+    if (nextProps.playerHealth === this.props.playerHealth) return false;
 
     return true;
   }

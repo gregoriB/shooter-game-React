@@ -3,10 +3,8 @@ import { gameData } from '../../data/game/gameData'
 
 class Player extends Component {
 
-  map = {
-    height: 600,
-    width: 900
-  }
+  interval;
+  map = { height: 600, width: 900 }
 
   handlePlayerMove = (index, speed) => {
     let newPlayerPos = this.handleDiagonalMovements([...this.props.playerPos], index, speed);
@@ -14,28 +12,20 @@ class Player extends Component {
     this.props.handlePlayerMove(newPlayerPos);
   }
 
-  handleBoundaryCheck = (newPlayerPos) => {
-    const playerSize = this.props.playerSize;
-    const width = this.map.width;
-    const height = this.map.height;
-    if (newPlayerPos[0] < 0) {
-      newPlayerPos.splice(0, 1, 0);
-    }
-    if (newPlayerPos[0] > width - (playerSize * 2)) {
-      newPlayerPos.splice(0, 1, width - (playerSize * 2));
-    }
-    if (newPlayerPos[1] < 0) {
-      newPlayerPos.splice(1, 1, 0);
-    }
-    if (newPlayerPos[1] > height - (playerSize * 2)) {
-      newPlayerPos.splice(1, 1, height - (playerSize * 2))
-    }
+  handleBoundaryCheck = newPlayerPos => {
+    const playerSize = this.props.playerSize,
+          width      = this.map.width,
+          height     = this.map.height;
+    if (newPlayerPos[0] < 0) newPlayerPos.splice(0, 1, 0);
+    if (newPlayerPos[1] < 0) newPlayerPos.splice(1, 1, 0);
+    if (newPlayerPos[0] > width - (playerSize * 2)) newPlayerPos.splice(0, 1, width - (playerSize * 2));
+    if (newPlayerPos[1] > height - (playerSize * 2)) newPlayerPos.splice(1, 1, height - (playerSize * 2))
   }
 
   handleDiagonalMovements = (playerPos, index, speed) => {
     let newPlayerPos = playerPos;
-    const willMove = this.props.willMove;
-    const stride = this.props.stride;
+    const willMove = this.props.willMove,
+          stride   = this.props.stride;
     if (willMove.right && willMove.up) {
       newPlayerPos.splice(0, 1, newPlayerPos[0] + stride/2);
       newPlayerPos.splice(1, 1, newPlayerPos[1] - stride/2);
@@ -52,26 +42,21 @@ class Player extends Component {
       newPlayerPos.splice(0, 1, newPlayerPos[0] - stride/2);
       newPlayerPos.splice(1, 1, newPlayerPos[1] + stride/2);
     } 
-    else {
-      newPlayerPos.splice(index, 1, newPlayerPos[index] + speed);
-    }
+    else newPlayerPos.splice(index, 1, newPlayerPos[index] + speed);
     
     return newPlayerPos;
   }
 
-  handleKeyDown = (e) => {
+  handleKeyDown = e => {
     e.preventDefault();
-    if (!this.props.isReady) {
-      this.handleClearMovement();
+    if (!this.props.isReady) return this.handleClearMovement();
 
-      return;
-    }
     this.handleDirections(e);
   }
 
    // using intervals for continous movement as a workaround to avoid key repeat from the operating system.
    // only the first keypress is registered and the interval continues until the key registers a 'keyup'.
-  handleDirections = (e) => {
+  handleDirections = e => {
     e.preventDefault();
     const stride = this.props.stride;
     switch(e.key) {
@@ -97,53 +82,45 @@ class Player extends Component {
   }
 
   handleDetermineMove = (index, stride) => {
-    const speed = this.props.speed;
-    const willMove = this.props.willMove;
-    const canMove = this.props.canMove;
+    const speed    = this.props.speed,
+          willMove = this.props.willMove,
+          canMove  = this.props.canMove;
     if (index === 0 && stride > 0 && canMove.right) {  //right
       clearInterval(willMove.right);
-      willMove.right = (
-        setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
-      );
       clearInterval(willMove.left);
+      willMove.right = setInterval(() => this.handlePlayerMove(index, stride), speed);
       willMove.left = false;
       canMove.right = false;
     }
     if (index === 0 && stride < 0 && canMove.left) {  //left
       clearInterval(willMove.left);
-      willMove.left = (
-        setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
-      );
       clearInterval(willMove.right);
+      willMove.left = setInterval(() => this.handlePlayerMove(index, stride), speed);
       willMove.right = false;
       canMove.left = false;
     }
     if (index === 1 && stride > 0 && canMove.down) {  //down
       clearInterval(willMove.down);
-      willMove.down = (
-        setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
-      );
       clearInterval(willMove.up);
+      willMove.down = setInterval(() => this.handlePlayerMove(index, stride), speed);
       willMove.up = false;
       canMove.down = false;
     }
     if (index === 1 && stride < 0 && canMove.up) {  //up
       clearInterval(willMove.up);
-      willMove.up = (
-        setInterval(() => {this.handlePlayerMove(index, stride)}, speed)
-      );
       clearInterval(willMove.down);
+      willMove.up = setInterval(() => this.handlePlayerMove(index, stride), speed);
       willMove.down = false;
       canMove.up = false;
     }
   }
 
    //removes the interval set to a key to stop movement and allows the key input to register again.  Also handles opposing directions.
-  handleKeyUp = (e) => {
+  handleKeyUp = e => {
     e.preventDefault();
-    const stride = this.props.stride;
-    const willMove = this.props.willMove;
-    const canMove = this.props.canMove;
+    const stride   = this.props.stride,
+          willMove = this.props.willMove,
+          canMove  = this.props.canMove;
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
@@ -193,21 +170,16 @@ class Player extends Component {
   handleClearMovement = () => {
     const willMove = this.props.willMove;
     clearInterval(willMove.right);
-    willMove.right = false;
     clearInterval(willMove.left);
-    willMove.left = false;
     clearInterval(willMove.up);
-    willMove.up = false;
     clearInterval(willMove.down);
+    willMove.right = false;
+    willMove.left = false;
+    willMove.up = false;
     willMove.down = false;
   }
 
-  shouldComponentUpdate() {
-
-    return false;
-  }
-
-  interval;
+  shouldComponentUpdate() { return false }
 
   componentDidMount() {
     this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
