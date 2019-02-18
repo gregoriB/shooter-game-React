@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { gameData } from '../../data/game/gameData'
 
 class Crosshairs extends Component {
-
   interval;
 
   shouldComponentUpdate() { return false }

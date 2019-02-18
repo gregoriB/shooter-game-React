@@ -4,13 +4,11 @@ import { gameData } from '../../data/game/gameData';
 import { grunt } from '../../data/enemies/grunt';
 
 class Enemy extends Component {
-
   movementInterval = false;
   damageInterval = false;
   key = grunt.keys[this.props.index];
 
   handleEnemyMovement = () => {
-
     const index = this.props.index;
     if (!grunt.keys[index]) return;
 
@@ -76,13 +74,12 @@ class Enemy extends Component {
 
   componentWillUnmount() {
     clearInterval(this.movementInterval);
-    this.movementInterval = false;
     clearInterval(this.damageInterval);
+    this.movementInterval = false;
     this.damageInterval = false;  
   }
 
   render() {
-
     const { index } = this.props;
 
     return (

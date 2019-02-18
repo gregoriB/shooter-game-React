@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { audio } from '../data/audio/audio'
+import React, { useState } from 'react';
+import { audio } from '../data/audio/audio';
 
 export const PlayerContext = React.createContext();
 
-export class PlayerProvider extends Component {
-  state = {
-    playerPos: [450, 300],
-    playerHealth: 100
-  }
+export function PlayerProvider(props) {
+  const initialPlayerPos = [450, 300];
 
-  player = {
+  const [playerPos, setPlayerPos] = useState(initialPlayerPos);
+  const [playerHealth, setPlayerHealth] = useState(100);
+
+  const playerData = {
     canMove: {
       left: true,
       right: true,
@@ -17,7 +17,7 @@ export class PlayerProvider extends Component {
       down: true
     },
     isReady: true,
-    playerSize: 15,
+    size: 15,
     speed: 10, // larger is slower, 10 is the fastest.
     stride: 4, // how far the player moves with each move input. Also affects the movement speed.
     willMove: {
@@ -28,31 +28,32 @@ export class PlayerProvider extends Component {
     }
   }
 
-  functions = {
-    handlePlayerMove: newPlayerPos => this.setState({ playerPos: newPlayerPos }),
-
-    handleTakeDamage: (damage) => {
-      const health = this.state.playerHealth;
+  const playerFunctions = {
+    playerMove: newPlayerPos => setPlayerPos(newPlayerPos),
+    
+    playerTakeDamage: damage => {
+      const health = playerHealth;
       audio.hit2.volume = .1;
       audio.hit2.currentTime = 0;
       audio.hit2.play();
-      if (!health || health - damage <= 0) return this.setState({ playerHealth: 'DEAD' });
+      if (!health || health - damage <= 0) return setPlayerHealth('DEAD');
 
-      if (health > 0) this.setState({ playerHealth: health - damage });
+      if (health > 0) setPlayerHealth(health - damage);
     }
   }
 
-  render() {
-    return (
-      <PlayerContext.Provider 
-        value={{
-          ...this.state,
-          ...this.functions,
-          ...this.player
-        }}
-      >
-        {this.props.children}
-      </PlayerContext.Provider>
-    );
-  }
+  return (
+    <PlayerContext.Provider 
+      value={{
+        playerPos,
+        setPlayerPos,
+        playerHealth,
+        setPlayerHealth,
+        playerData,
+        playerFunctions
+      }}
+    >
+      {props.children}
+    </PlayerContext.Provider>
+  )
 }
