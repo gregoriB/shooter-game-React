@@ -3,53 +3,54 @@ import { PlayerContext } from '../../contexts/PlayerContext';
 // import { gameData } from '../../data/game/gameData';
 
 export default function Player() {
-  const context = useContext(PlayerContext);
+  const playerContext = useContext(PlayerContext);
   let map = { height: 600, width: 900 };
+
   const handlePlayerMove = (index, speed) => {
-    let newPlayerPos = handleDiagonalMovements(index, speed);
-    handleBoundaryCheck(newPlayerPos);
-    context.playerFunctions.playerMove(newPlayerPos);
+    let newPos = handleDiagonalMovements(index, speed);
+    handleBoundaryCheck(newPos);
+    console.log(newPos)
+    playerContext.playerMove(newPos);
   }
 
-  const handleBoundaryCheck = newPlayerPos => {
-    const playerSize = context.playerData.size * 2,
+  const handleBoundaryCheck = newPos => {
+    const playerSize = playerContext.size * 2,
           width      = map.width,
           height     = map.height;
-    if (newPlayerPos[0] < 0) newPlayerPos.splice(0, 1, 0);
-    if (newPlayerPos[1] < 0) newPlayerPos.splice(1, 1, 0);
-    if (newPlayerPos[0] > width - playerSize) newPlayerPos.splice(0, 1, width - playerSize);
-    if (newPlayerPos[1] > height - playerSize) newPlayerPos.splice(1, 1, height - playerSize);
+    if (newPos[0] < 0) newPos.splice(0, 1, 0);
+    if (newPos[1] < 0) newPos.splice(1, 1, 0);
+    if (newPos[0] > width - playerSize) newPos.splice(0, 1, width - playerSize);
+    if (newPos[1] > height - playerSize) newPos.splice(1, 1, height - playerSize);
   }
 
   const handleDiagonalMovements = (index, speed) => {
-    let playerPos = [...context.playerPos];
-    // console.log(playerPos)
-    const willMove = context.playerData.willMove,
-          stride   = context.playerData.stride;
+    let newPos = [...playerContext.pos];
+    const willMove = playerContext.willMove,
+          stride   = playerContext.stride;
     if (willMove.right && willMove.up) {
-      playerPos.splice(0, 1, playerPos[0] + stride/2);
-      playerPos.splice(1, 1, playerPos[1] - stride/2);
+      newPos.splice(0, 1, newPos[0] + stride/2);
+      newPos.splice(1, 1, newPos[1] - stride/2);
     }
     else if (willMove.right && willMove.down) {
-      playerPos.splice(0, 1, playerPos[0] + stride/2);
-      playerPos.splice(1, 1, playerPos[1] + stride/2);
+      newPos.splice(0, 1, newPos[0] + stride/2);
+      newPos.splice(1, 1, newPos[1] + stride/2);
     }
     else if (willMove.left && willMove.up) {
-      playerPos.splice(0, 1, playerPos[0] - stride/2);
-      playerPos.splice(1, 1, playerPos[1] - stride/2);
+      newPos.splice(0, 1, newPos[0] - stride/2);
+      newPos.splice(1, 1, newPos[1] - stride/2);
     }
     else if (willMove.left && willMove.down) {
-      playerPos.splice(0, 1, playerPos[0] - stride/2);
-      playerPos.splice(1, 1, playerPos[1] + stride/2);
+      newPos.splice(0, 1, newPos[0] - stride/2);
+      newPos.splice(1, 1, newPos[1] + stride/2);
     } 
-    else playerPos.splice(index, 1, playerPos[index] + speed);
+    else newPos.splice(index, 1, newPos[index] + speed);
     
-    return playerPos;
+    return newPos;
   }
 
   const handleKeyDown = e => {
     e.preventDefault();
-    if (!context.playerData.isReady) return handleClearMovement();
+    if (!playerContext.isReady) return handleClearMovement();
 
     handleDirections(e);
   }
@@ -58,7 +59,7 @@ export default function Player() {
    // only the first keypress is registered and the interval continues until the key registers a 'keyup'.
    const handleDirections = e => {
     e.preventDefault();
-    const stride = context.playerData.stride;
+    const stride = playerContext.stride;
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
@@ -82,50 +83,54 @@ export default function Player() {
   }
 
   const handleDetermineMove = (index, stride) => {
-    const speed    = context.playerData.speed,
-          willMove = context.playerData.willMove,
-          canMove  = context.playerData.canMove;
+    const speed    = playerContext.speed,
+          willMove = playerContext.willMove,
+          canMove  = playerContext.canMove;
     if (index === 0 && stride > 0 && canMove.right) {  //right
       clearInterval(willMove.right);
       clearInterval(willMove.left);
+      handlePlayerMove(index, stride);
       willMove.right = setInterval(() => handlePlayerMove(index, stride), speed);
-      willMove.left = false;
-      canMove.right = false;
+      willMove.left  = false;
+      canMove.right  = false;
     }
     if (index === 0 && stride < 0 && canMove.left) {  //left
       clearInterval(willMove.left);
       clearInterval(willMove.right);
-      willMove.left = setInterval(() => handlePlayerMove(index, stride), speed);
+      handlePlayerMove(index, stride);
+      willMove.left  = setInterval(() => handlePlayerMove(index, stride), speed);
       willMove.right = false;
-      canMove.left = false;
+      canMove.left   = false;
     }
     if (index === 1 && stride > 0 && canMove.down) {  //down
       clearInterval(willMove.down);
       clearInterval(willMove.up);
+      handlePlayerMove(index, stride);
       willMove.down = setInterval(() => handlePlayerMove(index, stride), speed);
-      willMove.up = false;
-      canMove.down = false;
+      willMove.up   = false;
+      canMove.down  = false;
     }
     if (index === 1 && stride < 0 && canMove.up) {  //up
       clearInterval(willMove.up);
       clearInterval(willMove.down);
-      willMove.up = setInterval(() => handlePlayerMove(index, stride), speed);
+      handlePlayerMove(index, stride);
+      willMove.up   = setInterval(() => handlePlayerMove(index, stride), speed);
       willMove.down = false;
-      canMove.up = false;
+      canMove.up    = false;
     }
   }
 
    //removes the interval set to a key to stop movement and allows the key input to register again.  Also handles opposing directions.
   const handleKeyUp = e => {
     e.preventDefault();
-    const stride   = context.playerData.stride,
-          willMove = context.playerData.willMove,
-          canMove  = context.playerData.canMove;
+    const stride   = playerContext.stride,
+          willMove = playerContext.willMove,
+          canMove  = playerContext.canMove;
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
         clearInterval(willMove.right);
-        canMove.right = true;
+        canMove.right  = true;
         willMove.right = false;
         if (!canMove.left) {
           canMove.left = true;
@@ -135,7 +140,7 @@ export default function Player() {
       case 'ArrowLeft':
       case 'a':
         clearInterval(willMove.left);
-        canMove.left = true;
+        canMove.left  = true;
         willMove.left = false;
         if (!canMove.right) {
           canMove.right = true;
@@ -145,7 +150,7 @@ export default function Player() {
       case 'ArrowDown':
       case 's':
         clearInterval(willMove.down);
-        canMove.down = true;
+        canMove.down  = true;
         willMove.down = false;
         if (!canMove.up) {
           canMove.up = true;
@@ -155,8 +160,7 @@ export default function Player() {
       case 'ArrowUp':
       case 'w':
         clearInterval(willMove.up);
-        console.log(canMove, willMove)
-        canMove.up = true;
+        canMove.up  = true;
         willMove.up = false;
         if (!canMove.down) {
           canMove.down = true;
@@ -169,29 +173,22 @@ export default function Player() {
   }
 
   const handleClearMovement = () => {
-    const willMove = context.playerData.willMove;
+    const willMove = playerContext.willMove;
     clearInterval(willMove.right);
     clearInterval(willMove.left);
     clearInterval(willMove.up);
     clearInterval(willMove.down);
-    willMove.right = false;
-    willMove.left = false;
-    willMove.up = false;
-    willMove.down = false;
   }
-
-  // shouldComponentUpdate() { return false }
-
+  
   useEffect(() => {
-    // this.interval = setInterval(() => this.forceUpdate(), gameData.frameRate);
-    document.addEventListener('keyup', handleKeyUp);
     document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     }
-  })
+  });
 
   return (
     <>
@@ -200,13 +197,12 @@ export default function Player() {
         style={{
           color: 'white',
           background: 'black',
-          padding: context.playerData.size,
+          padding: playerContext.size,
           position: 'absolute',
-          left: context.playerPos[0],
-          top: context.playerPos[1]
+          left: playerContext.pos[0],
+          top: playerContext.pos[1]
         }}
       />
     </>
-  )
-
+  );
 }

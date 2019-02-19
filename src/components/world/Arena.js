@@ -44,20 +44,20 @@ export default function Arena() {
 
   // useEffect(() => {
   //   // interval = setInterval(() => forceUpdate(), gameData.frameRate);
-  //   document.addEventListener('mousemove', handleUpdateCrosshairPos);
-  //   audio.shoot1.volume = .1;
+  //   // document.addEventListener('mousemove', handleUpdateCrosshairPos);
+  //   // audio.shoot1.volume = .1;
 
   //   return () => {
-  //     document.removeEventListener('mousemove', handleUpdateCrosshairPos);
-  //     clearInterval(interval);
+  //     // document.removeEventListener('mousemove', handleUpdateCrosshairPos);
+  //     // clearInterval(interval);
   //   }
-  // })
+  // });
 
   return (
     <div 
       className='arena' 
-      onMouseDown={handleAutomaticFire}
-      onMouseUp={handleStopFiring}
+      // onMouseDown={handleAutomaticFire}
+      // onMouseUp={handleStopFiring}
     >
         {/* <Hud /> */}
         <Player />

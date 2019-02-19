@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { audio } from '../data/audio/audio';
+import React, { Component } from 'react';
+import { audio } from '../data/audio/audio'
 
-export const PlayerContext = React.createContext();
+export const PlayerContext = React.createContext();  
 
-export function PlayerProvider(props) {
-  const initialPlayerPos = [450, 300];
+export class PlayerProvider extends Component {
+  state = {
+    pos: [450, 300],
+    health: 100
+  }
 
-  const [playerPos, setPlayerPos] = useState(initialPlayerPos);
-  const [playerHealth, setPlayerHealth] = useState(100);
-
-  const playerData = {
+  data = {
     canMove: {
       left: true,
       right: true,
@@ -18,7 +18,7 @@ export function PlayerProvider(props) {
     },
     isReady: true,
     size: 15,
-    speed: 10, // larger is slower, 10 is the fastest.
+    speed: 100, // larger is slower, 10 is the fastest.
     stride: 4, // how far the player moves with each move input. Also affects the movement speed.
     willMove: {
       left: false,
@@ -28,32 +28,33 @@ export function PlayerProvider(props) {
     }
   }
 
-  const playerFunctions = {
-    playerMove: newPlayerPos => setPlayerPos(newPlayerPos),
-    
-    playerTakeDamage: damage => {
-      const health = playerHealth;
+  functions = {
+    playerMove: newPos => {
+      this.setState({ pos: newPos });
+    },
+
+    takeDamage: damage => {
+      const health = this.state.health;
       audio.hit2.volume = .1;
       audio.hit2.currentTime = 0;
       audio.hit2.play();
-      if (!health || health - damage <= 0) return setPlayerHealth('DEAD');
+      if (!health || health - damage <= 0) return this.setState({ health: 'DEAD' });
 
-      if (health > 0) setPlayerHealth(health - damage);
+      if (health > 0) this.setState({ health: health - damage });
     }
   }
 
-  return (
-    <PlayerContext.Provider 
-      value={{
-        playerPos,
-        setPlayerPos,
-        playerHealth,
-        setPlayerHealth,
-        playerData,
-        playerFunctions
-      }}
-    >
-      {props.children}
-    </PlayerContext.Provider>
-  )
+  render() {
+    return (
+      <PlayerContext.Provider 
+        value={{
+          ...this.state,
+          ...this.functions,
+          ...this.data
+        }}
+      >
+        {this.props.children}
+      </PlayerContext.Provider>
+    );
+  }
 }
