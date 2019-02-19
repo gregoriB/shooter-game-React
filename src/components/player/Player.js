@@ -4,28 +4,18 @@ import { PlayerContext } from '../../contexts/PlayerContext';
 
 export default function Player() {
   const playerContext = useContext(PlayerContext);
-  let map = { height: 600, width: 900 };
 
-  const handlePlayerMove = (index, speed) => {
-    let newPos = handleDiagonalMovements(index, speed);
-    handleBoundaryCheck(newPos);
-    console.log(newPos)
+  const map = { height: 600, width: 900 };
+
+  const handlePlayerMove = (index, orientation) => {
+    let newPos = handleDiagonalMovements(index, orientation);
+    newPos = handleBoundaryCheck(newPos);
     playerContext.playerMove(newPos);
   }
 
-  const handleBoundaryCheck = newPos => {
-    const playerSize = playerContext.size * 2,
-          width      = map.width,
-          height     = map.height;
-    if (newPos[0] < 0) newPos.splice(0, 1, 0);
-    if (newPos[1] < 0) newPos.splice(1, 1, 0);
-    if (newPos[0] > width - playerSize) newPos.splice(0, 1, width - playerSize);
-    if (newPos[1] > height - playerSize) newPos.splice(1, 1, height - playerSize);
-  }
-
-  const handleDiagonalMovements = (index, speed) => {
-    let newPos = [...playerContext.pos];
-    const willMove = playerContext.willMove,
+  const handleDiagonalMovements = (index, orientation) => {
+    const newPos   = [...playerContext.pos],
+          willMove = playerContext.willMove,
           stride   = playerContext.stride;
     if (willMove.right && willMove.up) {
       newPos.splice(0, 1, newPos[0] + stride/2);
@@ -43,80 +33,104 @@ export default function Player() {
       newPos.splice(0, 1, newPos[0] - stride/2);
       newPos.splice(1, 1, newPos[1] + stride/2);
     } 
-    else newPos.splice(index, 1, newPos[index] + speed);
+    else newPos.splice(index, 1, newPos[index] + orientation);
     
+    return newPos;
+  }
+
+  const handleBoundaryCheck = oldPos => {
+    const newPos = [...oldPos]
+    const playerSize = playerContext.size * 2,
+          width      = map.width,
+          height     = map.height;
+    if (newPos[0] < 0) newPos.splice(0, 1, 0);
+    else if (newPos[1] < 0) newPos.splice(1, 1, 0);
+    else if (newPos[0] > width - playerSize) newPos.splice(0, 1, width - playerSize);
+    else if (newPos[1] > height - playerSize) newPos.splice(1, 1, height - playerSize);
+
     return newPos;
   }
 
   const handleKeyDown = e => {
     e.preventDefault();
-    if (!playerContext.isReady) return handleClearMovement();
+    if (!playerContext.isReady) {
 
-    handleDirections(e);
+      return ( handleClearHorizontalMovement(), handleClearVerticalMovement() );
+    }
+
+    return handleDirections(e);
   }
 
    // using intervals for continous movement as a workaround to avoid key repeat from the operating system.
    // only the first keypress is registered and the interval continues until the key registers a 'keyup'.
    const handleDirections = e => {
     e.preventDefault();
-    const stride = playerContext.stride;
+    const canMove = playerContext.canMove
+    let stride = playerContext.stride,
+        index  = 0,
+        direction;
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
-        handleDetermineMove(0, stride);
+        if (canMove.right) {
+          canMove.right = false;
+          direction = 'right';
+        }
         break;
       case 'ArrowLeft':
       case 'a':
-        handleDetermineMove(0, -stride);
+        if (canMove.left) {
+          canMove.left = false;
+          stride = -stride;
+          direction = 'left';
+        }
         break;
       case 'ArrowDown':
       case 's':
-        handleDetermineMove(1, stride);
+        if (canMove.down) {
+          canMove.down = false;
+          index = 1;
+          direction = 'down';
+        }
         break;
       case 'ArrowUp':
       case 'w':
-        handleDetermineMove(1, -stride);
+        if (canMove.up) {
+          canMove.up = false;
+          index = 1;
+          stride = -stride;
+          direction = 'up';
+        };
         break;
       default:
         break;
     }
+
+    return direction && handleDetermineMove(index, stride, direction)
   }
 
-  const handleDetermineMove = (index, stride) => {
+  const handleDetermineMove = (index, stride, direction) => {
+    if (!index) handleClearHorizontalMovement();
+    if (index) handleClearVerticalMovement();
+    handlePlayerMove(index, stride);
     const speed    = playerContext.speed,
           willMove = playerContext.willMove,
-          canMove  = playerContext.canMove;
-    if (index === 0 && stride > 0 && canMove.right) {  //right
-      clearInterval(willMove.right);
-      clearInterval(willMove.left);
-      handlePlayerMove(index, stride);
-      willMove.right = setInterval(() => handlePlayerMove(index, stride), speed);
-      willMove.left  = false;
-      canMove.right  = false;
-    }
-    if (index === 0 && stride < 0 && canMove.left) {  //left
-      clearInterval(willMove.left);
-      clearInterval(willMove.right);
-      handlePlayerMove(index, stride);
-      willMove.left  = setInterval(() => handlePlayerMove(index, stride), speed);
-      willMove.right = false;
-      canMove.left   = false;
-    }
-    if (index === 1 && stride > 0 && canMove.down) {  //down
-      clearInterval(willMove.down);
-      clearInterval(willMove.up);
-      handlePlayerMove(index, stride);
-      willMove.down = setInterval(() => handlePlayerMove(index, stride), speed);
-      willMove.up   = false;
-      canMove.down  = false;
-    }
-    if (index === 1 && stride < 0 && canMove.up) {  //up
-      clearInterval(willMove.up);
-      clearInterval(willMove.down);
-      handlePlayerMove(index, stride);
-      willMove.up   = setInterval(() => handlePlayerMove(index, stride), speed);
-      willMove.down = false;
-      canMove.up    = false;
+          interval = setInterval(() => handlePlayerMove(index, stride), speed);
+    switch(direction) {
+      case 'right':
+        willMove.right = interval;
+        break;
+      case 'left':
+        willMove.left = interval;
+        break;
+      case 'down':
+        willMove.down = interval;
+        break;
+      case 'up':
+        willMove.up = interval;
+        break;
+      default:
+        break;
     }
   }
 
@@ -124,60 +138,45 @@ export default function Player() {
   const handleKeyUp = e => {
     e.preventDefault();
     const stride   = playerContext.stride,
-          willMove = playerContext.willMove,
           canMove  = playerContext.canMove;
     switch(e.key) {
       case 'ArrowRight':
       case 'd':
-        clearInterval(willMove.right);
+        playerContext.clearMovementIntervals('right');
         canMove.right  = true;
-        willMove.right = false;
-        if (!canMove.left) {
-          canMove.left = true;
-          handleDetermineMove(0, -stride);
-        }
-        break
+        if (!canMove.left) return handleDetermineMove(0, -stride, 'left');
+        break;
       case 'ArrowLeft':
       case 'a':
-        clearInterval(willMove.left);
+        playerContext.clearMovementIntervals('left');
         canMove.left  = true;
-        willMove.left = false;
-        if (!canMove.right) {
-          canMove.right = true;
-          handleDetermineMove(0, stride);
-        }
+        if (!canMove.right) return handleDetermineMove(0, stride, 'right');
         break;
       case 'ArrowDown':
       case 's':
-        clearInterval(willMove.down);
+        playerContext.clearMovementIntervals('down');
         canMove.down  = true;
-        willMove.down = false;
-        if (!canMove.up) {
-          canMove.up = true;
-          handleDetermineMove(1, -stride);
-        }
+        if (!canMove.up) return handleDetermineMove(1, -stride, 'up');
         break;
       case 'ArrowUp':
       case 'w':
-        clearInterval(willMove.up);
+        playerContext.clearMovementIntervals('up');
         canMove.up  = true;
-        willMove.up = false;
-        if (!canMove.down) {
-          canMove.down = true;
-          handleDetermineMove(1, stride);
-        }
+        if (!canMove.down) return handleDetermineMove(1, stride, 'down');
         break;
       default:
         break;
     }
   }
 
-  const handleClearMovement = () => {
-    const willMove = playerContext.willMove;
-    clearInterval(willMove.right);
-    clearInterval(willMove.left);
-    clearInterval(willMove.up);
-    clearInterval(willMove.down);
+  const handleClearHorizontalMovement = () => {
+    playerContext.clearMovementIntervals('right');
+    playerContext.clearMovementIntervals('left');
+  }
+
+  const handleClearVerticalMovement = () => {
+    playerContext.clearMovementIntervals('down');
+    playerContext.clearMovementIntervals('up');
   }
   
   useEffect(() => {

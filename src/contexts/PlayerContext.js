@@ -11,28 +11,28 @@ export class PlayerProvider extends Component {
 
   data = {
     canMove: {
-      left: true,
       right: true,
-      up: true,
-      down: true
+      left: true,
+      down: true,
+      up: true
     },
     isReady: true,
     size: 15,
     speed: 100, // larger is slower, 10 is the fastest.
-    stride: 4, // how far the player moves with each move input. Also affects the movement speed.
+    stride: 20, // how far the player moves with each move input. Also affects the movement speed.
     willMove: {
-      left: false,
       right: false,
-      up: false,
-      down: false
+      left: false,
+      down: false,
+      up: false
     }
   }
 
   functions = {
     playerMove: newPos => {
       this.setState({ pos: newPos });
+      console.log(this.state.pos, newPos)
     },
-
     takeDamage: damage => {
       const health = this.state.health;
       audio.hit2.volume = .1;
@@ -41,7 +41,31 @@ export class PlayerProvider extends Component {
       if (!health || health - damage <= 0) return this.setState({ health: 'DEAD' });
 
       if (health > 0) this.setState({ health: health - damage });
+    },
+    clearMovementIntervals: (direction) => {
+      switch(direction) {
+        case 'right':
+          clearInterval(this.data.willMove.right);
+          this.data.willMove.right = false;
+          break;
+          case 'left':
+          clearInterval(this.data.willMove.left);
+          this.data.willMove.left = false;
+          break;
+          case 'down':
+          clearInterval(this.data.willMove.down);
+          this.data.willMove.down = false;
+          break;
+          case 'up':
+          clearInterval(this.data.willMove.up);
+          this.data.willMove.up = false;
+          break;
+      }
     }
+  }
+
+  shouldComponentUpdate() {
+    return true;
   }
 
   render() {
