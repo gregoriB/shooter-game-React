@@ -31,7 +31,6 @@ export class PlayerProvider extends Component {
   functions = {
     playerMove: newPos => {
       this.setState({ pos: newPos });
-      console.log(this.state.pos, newPos)
     },
     takeDamage: damage => {
       const health = this.state.health;
