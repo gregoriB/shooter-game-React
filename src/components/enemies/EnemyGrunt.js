@@ -50,7 +50,7 @@ class Enemy extends Component {
 
     const crosshairX = this.props.crosshairPos[0],
           crosshairY = this.props.crosshairPos[1],
-          gruntSize  = grunt.size*2;
+          gruntSize  = grunt.size * 2;
     if ((crosshairX >= gruntX && crosshairX <= gruntX + gruntSize) && (crosshairY >= gruntY && crosshairY <= gruntY + gruntSize)) {
       this.handleDamageGrunt();
       gameData.isShooting = false;
