@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 class Hud extends Component {
 
   shouldComponentUpdate(nextProps) {
-    if (nextProps.playerHealth === this.props.playerHealth) return false;
+    if (nextProps.health === this.props.health) return false;
 
     return true;
   }
@@ -11,7 +11,7 @@ class Hud extends Component {
   render() {
     return (
       <div className='hud'>
-        Player Health: {this.props.playerHealth}
+        Player Health: {this.props.health}
       </div>
     )
   }

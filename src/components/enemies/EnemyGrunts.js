@@ -15,9 +15,9 @@ class Enemies extends Component {
     this.grunts = grunt.pos.map((item, index) => {
       return (
         <Enemy
-          playerTakeDamage={this.props.handleTakeDamage}
-          playerPos={this.props.playerPos}
-          playerSize={this.props.playerSize}
+          playerTakeDamage={this.props.takeDamage}
+          playerPos={this.props.pos}
+          playerSize={this.props.pos}
           index={index}
           isShooting={this.props.isShooting}
           crosshairPos={this.props.crosshairPos}

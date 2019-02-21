@@ -1,12 +1,11 @@
 import React from 'react';
 import './App.css';
-// import Arena from './components/world/Arena';
-import Player from './components/player/Player';
+import Arena from './components/world/Arena';
 
 const App = () => {
   return (
     <div className="App">
-      <Player />
+      <Arena />
     </div>
   );
 }

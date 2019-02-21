@@ -9,12 +9,12 @@ body {
   display: inline-block;
   width: 100vw;
   margin: 0 auto;
-  background: rgb(92, 0, 0);
+  background: black;
 }
 
 .arena {
   cursor: none;
-  background: rgba(85, 2, 218, 0.438);
+  background: rgba(2, 103, 218, 0.562);
   position: relative;
   margin: 2% auto;
   width: 900px;
